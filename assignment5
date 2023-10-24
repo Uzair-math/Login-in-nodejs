@@ -1,0 +1,53 @@
+const express = require('express')
+const app = express()
+app.use(express.json())
+const jwt = require('jsonwebtoken');
+const PORT = 3000;
+const secretKey = "secretkey";
+const arr = [];
+app.listen(PORT, ()=>{
+    console.log("true");
+})
+
+
+// ------------------ singup -----------------------------
+
+app.post("/singup", (req, res)=>{
+    let email = req.body.email;
+    let pass = req.body.password;
+    arr.push(email)
+    arr.push(pass)
+    res.send(arr);
+})
+
+
+// ------------------ login -----------------------------
+
+app.post("/login",(req,res)=>{
+   const emails = req.body.email;
+   const pass = req.body.password;
+   if (arr[0] === emails && arr[1] === pass) {
+         const token = jwt.sign({arr},secretKey,{expiresIn:"300s"})
+       res.send(token)
+    }
+    else{
+        res.send("error")
+    }
+});
+
+app.post("/profile",middleware,controller);
+function middleware (req,res,next){
+    const bearerHeader = req.headers.authorization;
+    const match = jwt.verify(bearerHeader, secretKey, (err, bearerHeader)=>{
+        if (bearerHeader) {
+            res.send("Success")
+        }
+        else{
+            res.send("error")
+            next()
+        }
+    })
+}
+function controller(req,res) {
+    res.send("vaild information")
+}
